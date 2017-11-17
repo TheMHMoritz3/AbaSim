@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -29,7 +30,14 @@ namespace AbaSim.Universal
 
         private void onSimulateClicked(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(SimumatePage)); 
+            showMessageBox();
+            Frame.Navigate(typeof(SimumatePage));
         }
+
+        private async void showMessageBox()
+        {
+            await Messages.MessageBoxFactory.getMessageBoxCalculation().ShowAsync();
+        }
+
     }
 }

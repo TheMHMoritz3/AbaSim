@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Hub Header="Simulation" Margin="331,106,0,0" HorizontalAlignment="Left" Width="1579" Height="964" VerticalAlignment="Top">
+        <Hub Header="Simulation" Margin="331,83,0,0" HorizontalAlignment="Left" Width="1579" Height="987" VerticalAlignment="Top">
             <HubSection Header="Zeile">
                 <DataTemplate>
                     <Grid/>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,6 +26,11 @@ namespace AbaSim.Universal
         public SimumatePage()
         {
             this.InitializeComponent();
+        }
+
+        public void calculationFinished()
+        {
+            Messages.MessageBoxFactory.getMessageBoxCalculation().Commands.Add(new UICommand { Label = "Ok", Id = 0 });
         }
     }
 }
