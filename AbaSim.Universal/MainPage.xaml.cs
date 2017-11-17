@@ -30,14 +30,7 @@ namespace AbaSim.Universal
 
         private void onSimulateClicked(object sender, RoutedEventArgs e)
         {
-            showMessageBox();
             Frame.Navigate(typeof(SimumatePage));
         }
-
-        private async void showMessageBox()
-        {
-            await Messages.MessageBoxFactory.getMessageBoxCalculation().ShowAsync();
-        }
-
     }
 }

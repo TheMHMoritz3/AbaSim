@@ -8,24 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Hub Header="Simulation" Margin="331,83,0,0" HorizontalAlignment="Left" Width="1579" Height="987" VerticalAlignment="Top">
-            <HubSection Header="Zeile">
-                <DataTemplate>
-                    <Grid/>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Header="Ausführungen">
-                <DataTemplate>
-                    <Grid/>
-                </DataTemplate>
-            </HubSection>
-        </Hub>
-        <ListView HorizontalAlignment="Left" Margin="10,10,0,10" Width="316">
-            <ListViewItem Content="Schritte"/>
-            <ListViewItem Content="Analysis"/>
-            <ListViewItem Content="Statistics"/>
-        </ListView>
-        <Slider Margin="331,34,10,0" VerticalAlignment="Top"/>
-
+        <ListView Margin="10,10,10,115" />
+        <ProgressBar Margin="10,0,10,10" VerticalAlignment="Bottom" IsIndeterminate="True" Height="100"/>
     </Grid>
 </Page>

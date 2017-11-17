@@ -28,9 +28,14 @@ namespace AbaSim.Universal
             this.InitializeComponent();
         }
 
+        public void startSimulationThread()
+        {
+
+        }
+
         public void calculationFinished()
         {
-            Messages.MessageBoxFactory.getMessageBoxCalculation().Commands.Add(new UICommand { Label = "Ok", Id = 0 });
+            
         }
     }
 }
