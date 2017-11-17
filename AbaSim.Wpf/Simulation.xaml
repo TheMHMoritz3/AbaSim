@@ -1,0 +1,23 @@
+﻿<Window x:Class="AbaSim.Wpf.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AbaSim.Wpf"
+        mc:Ignorable="d"
+        Title="Window1" Height="454.912" Width="720.795">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Steps">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Analysis" IsEnabled="False">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Statistics" IsEnabled="False">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>

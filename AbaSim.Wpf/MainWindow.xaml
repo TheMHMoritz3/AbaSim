@@ -8,16 +8,15 @@
         Title="MainWindow" Height="456.863" Width="807.353">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="704*"/>
-            <ColumnDefinition Width="95*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="369*"/>
-            <RowDefinition Height="40*"/>
-            <RowDefinition Height="17*"/>
+            <RowDefinition Height="68*"/>
+            <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
-        <Button Content="Compile" Margin="10" Grid.Row="1" Grid.Column="1"/>
-        <TextBox HorizontalAlignment="Left" Height="349" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="779" Grid.ColumnSpan="2" AcceptsReturn="True"/>
+        <Button x:Name="CompileButton" Content="Compile" Margin="0,0,10,4" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" Click="onCompileClicked"/>
+        <TextBox Margin="10,10,10,29" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True"/>
+        <StatusBar Height="17" VerticalAlignment="Bottom" Grid.Row="1"/>
 
     </Grid>
 </Window>
