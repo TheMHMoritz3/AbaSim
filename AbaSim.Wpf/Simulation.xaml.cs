@@ -23,5 +23,16 @@ namespace AbaSim.Wpf
         {
             InitializeComponent();
         }
+
+        public void setProgrammCode(string text)
+        {
+
+        }
+
+        private void onStepValueChenged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            int wantedStep = (int)StepSlider.Value;
+            StepLabel.Content = "Step: " + wantedStep;
+        }
     }
 }
