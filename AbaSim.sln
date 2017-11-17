@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbaSim.Core", "AbaSim.Core\AbaSim.Core.csproj", "{68B2339F-CD0A-4439-A497-E12108A6237E}"
 EndProject
@@ -13,8 +13,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbaSim.ConsoleRunner", "AbaSim.ConsoleRunner\AbaSim.ConsoleRunner.csproj", "{86908B2B-282D-4626-B20E-A3DCBB0CAF67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbaSim.ConsoleCompiler", "AbaSim.ConsoleCompiler\AbaSim.ConsoleCompiler.csproj", "{FC4697B5-DF44-4A43-A6BC-6E442C30C940}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbaSim.Universal", "AbaSim.Universal\AbaSim.Universal.csproj", "{513F165C-1B80-41A3-B7AA-742A5B505D5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbaSim.Wpf", "AbaSim.Wpf\AbaSim.Wpf.csproj", "{F72A1A9D-E9D7-4C24-B671-09E73495DD1D}"
 EndProject
@@ -78,26 +76,6 @@ Global
 		{FC4697B5-DF44-4A43-A6BC-6E442C30C940}.Release|x64.Build.0 = Release|Any CPU
 		{FC4697B5-DF44-4A43-A6BC-6E442C30C940}.Release|x86.ActiveCfg = Release|Any CPU
 		{FC4697B5-DF44-4A43-A6BC-6E442C30C940}.Release|x86.Build.0 = Release|Any CPU
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|ARM.ActiveCfg = Debug|ARM
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|ARM.Build.0 = Debug|ARM
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|ARM.Deploy.0 = Debug|ARM
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|x64.ActiveCfg = Debug|x64
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|x64.Build.0 = Debug|x64
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|x64.Deploy.0 = Debug|x64
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|x86.ActiveCfg = Debug|x86
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|x86.Build.0 = Debug|x86
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Debug|x86.Deploy.0 = Debug|x86
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|Any CPU.ActiveCfg = Release|x86
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|ARM.ActiveCfg = Release|ARM
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|ARM.Build.0 = Release|ARM
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|ARM.Deploy.0 = Release|ARM
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|x64.ActiveCfg = Release|x64
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|x64.Build.0 = Release|x64
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|x64.Deploy.0 = Release|x64
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|x86.ActiveCfg = Release|x86
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|x86.Build.0 = Release|x86
-		{513F165C-1B80-41A3-B7AA-742A5B505D5C}.Release|x86.Deploy.0 = Release|x86
 		{F72A1A9D-E9D7-4C24-B671-09E73495DD1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F72A1A9D-E9D7-4C24-B671-09E73495DD1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F72A1A9D-E9D7-4C24-B671-09E73495DD1D}.Debug|ARM.ActiveCfg = Debug|Any CPU

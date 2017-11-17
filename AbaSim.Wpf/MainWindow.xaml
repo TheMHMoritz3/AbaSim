@@ -5,8 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AbaSim.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="456.863" Width="807.353">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="704*"/>
+            <ColumnDefinition Width="95*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="369*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="17*"/>
+        </Grid.RowDefinitions>
+        <Button Content="Compile" Margin="10" Grid.Row="1" Grid.Column="1"/>
+        <TextBox HorizontalAlignment="Left" Height="349" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="779" Grid.ColumnSpan="2" AcceptsReturn="True"/>
+
     </Grid>
 </Window>
