@@ -9,6 +9,6 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBox Margin="10,10,10,47" TextWrapping="Wrap" Text="" AcceptsReturn="True"/>
-        <Button Content="Simulate" HorizontalAlignment="Right" Margin="0,0,7,10" VerticalAlignment="Bottom" Height="32" Width="78"/>
+        <Button Content="Simulate" HorizontalAlignment="Right" Margin="0,0,7,10" VerticalAlignment="Bottom" Height="32" Width="78" Click="onSimulateClicked"/>
     </Grid>
 </Page>

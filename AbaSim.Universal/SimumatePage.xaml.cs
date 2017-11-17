@@ -13,23 +13,18 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// Die Elementvorlage "Leere Seite" wird unter https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x407 dokumentiert.
+// Die Elementvorlage "Leere Seite" wird unter https://go.microsoft.com/fwlink/?LinkId=234238 dokumentiert.
 
 namespace AbaSim.Universal
 {
     /// <summary>
     /// Eine leere Seite, die eigenständig verwendet oder zu der innerhalb eines Rahmens navigiert werden kann.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class SimumatePage : Page
     {
-        public MainPage()
+        public SimumatePage()
         {
             this.InitializeComponent();
-        }
-
-        private void onSimulateClicked(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(SimumatePage)); 
         }
     }
 }
