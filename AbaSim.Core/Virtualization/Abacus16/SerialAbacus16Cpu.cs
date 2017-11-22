@@ -79,6 +79,9 @@ namespace AbaSim.Core.Virtualization.Abacus16
 
 			InstructionFetch();
 			InstructionDecode();
+
+			NotifyInstructionPending();
+
 			Execute();
 			MemoryAccess();
 			WriteBack();
@@ -104,6 +107,8 @@ namespace AbaSim.Core.Virtualization.Abacus16
 		}
 		private RegisterGroup _Register = new RegisterGroup();
 
+		public event EventHandler<InstructionPendingEventArgs> InstructionPending;
+
 		protected IMemoryProvider<Word> DataMemory;
 
 		protected IMemoryProvider<Word> ProgramMemory;
@@ -120,7 +125,14 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			{
 				throw new ProgramCounterOutOfBoundsException("The address for the next CPU instruction is out of bounds of the program memory.", ProgramCounter);
 			}
-			CurrentInstruction = ProgramMemory[ProgramCounter];
+			try
+			{
+				CurrentInstruction = ProgramMemory[ProgramCounter];
+			}
+			catch (MemoryAccessViolationException e)
+			{
+				throw new ProgramCounterOutOfBoundsException("The address for the next CPU instruction is in an inaccessible area of program memory.", e, ProgramCounter);
+			}
 		}
 
 		protected virtual void InstructionDecode()
@@ -148,7 +160,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 
 		protected virtual void MemoryAccess()
 		{
-			if (OperationUnit.UpdateMemoryAddress != null)
+			if (OperationUnit.UpdateMemoryAddress != null && DataMemory[OperationUnit.UpdateMemoryAddress.Value] != OperationUnit.UpdateMemoryValue)
 			{
 				DataMemory[OperationUnit.UpdateMemoryAddress.Value] = OperationUnit.UpdateMemoryValue;
 				StateChanged = true;
@@ -159,7 +171,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 		{
 			for (int i = 0; i < OperationUnit.UpdatedRegisters.Length; i++)
 			{
-				if (OperationUnit.UpdatedRegisters[i] != null)
+				if (OperationUnit.UpdatedRegisters[i] != null && Register.Scalar[(RegisterIndex)i] != OperationUnit.UpdatedRegisters[i].Value)
 				{
 					Register.Scalar[(RegisterIndex)i] = OperationUnit.UpdatedRegisters[i].Value;
 					StateChanged = true;
@@ -167,7 +179,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			}
 			for (int i = 0; i < OperationUnit.UpdatedVRegisters.Length; i++)
 			{
-				if (OperationUnit.UpdatedVRegisters[i] != null)
+				if (OperationUnit.UpdatedVRegisters[i] != null && Register.Vector[(RegisterIndex)i] != OperationUnit.UpdatedVRegisters[i])
 				{
 					Register.Vector[(RegisterIndex)i] = OperationUnit.UpdatedVRegisters[i];
 					StateChanged = true;
@@ -176,6 +188,13 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			ProgramCounter += OperationUnit.ProgramCounterChange;
 		}
 
+		protected void NotifyInstructionPending()
+		{
+			if (InstructionPending != null)
+			{
+				InstructionPending(this, new InstructionPendingEventArgs(OperationUnit, CurrentInstruction, ProgramCounter, this));
+			}
+		}
 
 		public void Synchronize()
 		{
