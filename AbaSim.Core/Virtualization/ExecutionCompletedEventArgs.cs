@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AbaSim.Core.Virtualization
 {
-	public class ExecutionCompletedEventArgs
+	public class ExecutionCompletedEventArgs : EventArgs
 	{
 		public ExecutionCompletedEventArgs(Exception reason)
 		{

@@ -34,6 +34,7 @@ namespace AbaSim.Core.Virtualization
 		}
 		public BufferMemory16(uint size)
 		{
+            Buffer = new Abacus16.Word[size];
 			Reset();
 		}
 
