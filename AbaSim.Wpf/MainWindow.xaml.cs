@@ -31,19 +31,11 @@ namespace AbaSim.Wpf
             startSimulationWindowThread();
         }
 
-        private void startSimulationWindowThread()
-        {
-            Thread simulationWindowThread = new Thread(new ThreadStart(openSimulationWindow));
-            simulationWindowThread.SetApartmentState(ApartmentState.STA);
-            simulationWindowThread.IsBackground = true;
-            simulationWindowThread.Start();
-        }
-
-        private void openSimulationWindow()
+        private async void startSimulationWindowThread()
         {
             Window1 simulationWindow = new Window1();
             simulationWindow.Show();
-            System.Windows.Threading.Dispatcher.Run();
+            await simulationWindow.setProgrammCode(ProgrammCodeTextBox.Text);
         }
     }
 }

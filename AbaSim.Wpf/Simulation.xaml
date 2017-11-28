@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AbaSim.Wpf"
+        xmlns:connection="clr-namespace:AbaSim.Wpf.Connection"
+        d:DataContext="{d:DesignInstance Type=connection:ModelConnection}"
         mc:Ignorable="d"
         Title="Window1" Height="454.912" Width="720.795">
     <Grid>
@@ -27,8 +29,8 @@
                         <RowDefinition Height="342*"/>
                     </Grid.RowDefinitions>
                     <Slider x:Name="StepSlider" HorizontalAlignment="Left" Margin="12.485,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.485,-0.207" Width="636" Height="18" ValueChanged="onStepValueChenged" SmallChange="1" Maximum="1000" Grid.ColumnSpan="5" IsEnabled="False" Grid.Column="1"/>
-                    <Label x:Name="StepLabel" Content="Step: 0" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="26" Width="46" Grid.ColumnSpan="2"/>
-                    <ListView HorizontalAlignment="Left" Height="342" Grid.Row="1" VerticalAlignment="Top" Width="152" Grid.ColumnSpan="2">
+                    <TextBlock x:Name="StepLabel" Text="{Binding Steps, StringFormat='Step: {0}', Delay=100, FallbackValue=0}" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="26" Width="46" Grid.ColumnSpan="2"/>
+                    <ListView HorizontalAlignment="Left" Height="342" VerticalAlignment="Top" Width="152" Grid.ColumnSpan="2" Margin="0,35,0,0" Grid.RowSpan="2">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn/>
@@ -81,8 +83,8 @@
             </TabItem>
         </TabControl>
         <StatusBar HorizontalAlignment="Left" Height="19" Grid.Row="1" VerticalAlignment="Top" Width="713">
-            <ProgressBar Height="10" Width="100" IsIndeterminate="True"/>
-            <TextBlock TextWrapping="Wrap" Text="Calcualtion in Progress"/>
+            <ProgressBar x:Name="InformationProgressbar" Height="10" Width="100" IsIndeterminate="True"/>
+            <TextBlock x:Name="InformationLabel" TextWrapping="Wrap" Text="Calcualtion in Progress"/>
         </StatusBar>
 
     </Grid>
