@@ -28,7 +28,7 @@
                         <RowDefinition Height="35*"/>
                         <RowDefinition Height="342*"/>
                     </Grid.RowDefinitions>
-                    <Slider x:Name="StepSlider" HorizontalAlignment="Left" Margin="12.485,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.485,-0.207" Width="636" Height="18" ValueChanged="onStepValueChenged" SmallChange="1" Maximum="1000" Grid.ColumnSpan="5" IsEnabled="False" Grid.Column="1"/>
+                    <Slider x:Name="StepSlider" HorizontalAlignment="Left" Margin="36,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.485,-0.207" Width="612" Height="18" ValueChanged="onStepValueChenged" SmallChange="1" Maximum="{Binding Steps,Delay=100,FallbackValue=0}" Grid.ColumnSpan="5" IsEnabled="False" Grid.Column="1"/>
                     <TextBlock x:Name="StepLabel" Text="{Binding Steps, StringFormat='Step: {0}', Delay=100, FallbackValue=0}" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="26" Width="46" Grid.ColumnSpan="2"/>
                     <ListView HorizontalAlignment="Left" Height="342" VerticalAlignment="Top" Width="152" Grid.ColumnSpan="2" Margin="0,35,0,0" Grid.RowSpan="2">
                         <ListView.View>

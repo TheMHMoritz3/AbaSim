@@ -39,7 +39,7 @@ namespace AbaSim.Wpf
         private void onStepValueChenged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int wantedStep = (int)StepSlider.Value;
-           // StepLabel.Content = "Step: " + wantedStep;
+            StepLabel.Text = "Step: " + wantedStep;
         }
 
         private async Task startCompilation()
