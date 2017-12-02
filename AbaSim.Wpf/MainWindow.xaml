@@ -15,7 +15,7 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
         <Button x:Name="CompileButton" Content="Compile" Margin="0,0,10,4" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" Click="onCompileClicked"/>
-        <TextBox x:Name="ProgrammCodeTextBox" Margin="10,10,10,29" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True"/>
+        <TextBox x:Name="ProgrammCodeTextBox" Margin="10,10,10,29" TextWrapping="Wrap" AcceptsReturn="True"/>
         <StatusBar Height="17" VerticalAlignment="Bottom" Grid.Row="1"/>
 
     </Grid>

@@ -67,7 +67,7 @@
                     </ListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="Analysis" IsEnabled="False">
+            <TabItem x:Name="AnalysisTabItem" Header="Analysis" IsEnabled="False">
                 <Grid Background="#FFE5E5E5">
                     <ListView HorizontalAlignment="Left" Height="377" VerticalAlignment="Top" Width="707">
                         <ListView.View>
@@ -78,7 +78,7 @@
                     </ListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="Statistics" IsEnabled="False">
+            <TabItem x:Name="StatisticsTabItem" Header="Statistics" IsEnabled="False">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
         </TabControl>

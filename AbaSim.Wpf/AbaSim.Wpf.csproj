@@ -54,8 +54,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Namespace.cs" />
     <Compile Include="Connection\ModelConnection.cs" />
     <Compile Include="Connection\SystemState.cs" />
+    <Compile Include="Exception\Exception.cs" />
+    <Compile Include="Exception\ExceptionHandling.cs" />
     <Compile Include="Simulation.xaml.cs">
       <DependentUpon>Simulation.xaml</DependentUpon>
     </Compile>

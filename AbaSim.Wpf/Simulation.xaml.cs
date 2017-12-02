@@ -28,6 +28,10 @@ namespace AbaSim.Wpf
 
         public async Task setProgrammCode(string text)
         {
+            if (text.Equals(""))
+            {
+                throw new Wpf.Exception.Exception(ExceptionId.NoProgrammCode, "Programm Code was: \"\"");
+            }
             Model.setProgrammText(text);
             await startCompilation();
         }
@@ -40,8 +44,9 @@ namespace AbaSim.Wpf
 
         private async Task startCompilation()
         {
-            InformationLabel.Text = "Compiling!";
+            InformationLabel.Text = "Compiling";
             await Task.Run(()=>Model.startCompiling());
+            InformationLabel.Text = "Running";
             await Model.startComputation();
             InformationLabel.Text = "Finished";
             reciveFromModel();
@@ -50,9 +55,12 @@ namespace AbaSim.Wpf
         private void reciveFromModel()
         {
             StepSlider.Maximum = Model.Steps;
-            if(Model.Steps>0)
+
+            if (Model.Steps>0)
             {
-                //TODO Freischalten
+                StepSlider.IsEnabled = true;
+                AnalysisTabItem.IsEnabled = true;
+                StatisticsTabItem.IsEnabled = true;
             }
         }
 

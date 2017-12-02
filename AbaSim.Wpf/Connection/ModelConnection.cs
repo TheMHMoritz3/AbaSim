@@ -26,8 +26,7 @@ namespace AbaSim.Wpf.Connection
         {
             if(ProgrammText.Equals(""))
             {
-                //Messagebox Fehler kein Text. Berechnung Beenden
-                return;
+                throw new Wpf.Exception.Exception(ExceptionId.NoProgrammCode, "Programm Code was: \"\"");
             }
 
             try

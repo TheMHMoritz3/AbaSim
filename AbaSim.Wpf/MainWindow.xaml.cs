@@ -33,9 +33,20 @@ namespace AbaSim.Wpf
 
         private async void startSimulationWindowThread()
         {
-            Window1 simulationWindow = new Window1();
-            simulationWindow.Show();
-            await simulationWindow.setProgrammCode(ProgrammCodeTextBox.Text);
+            try
+            {
+                Window1 simulationWindow = new Window1();
+                simulationWindow.Show();
+                await simulationWindow.setProgrammCode(ProgrammCodeTextBox.Text);
+            }catch(Exception.Exception ex)
+            {
+                Exception.ExceptionHandling.catchException(ex);
+                return;
+            }catch(System.Exception ex)
+            {
+                Exception.ExceptionHandling.catchException(ex);
+                return;
+            }
         }
     }
 }
