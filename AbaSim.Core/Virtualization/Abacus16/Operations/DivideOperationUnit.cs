@@ -12,7 +12,7 @@ namespace AbaSim.Core.Virtualization.Abacus16.Operations
 	{
 		public const byte OpCode = Bit.B3 + Bit.B2;
 
-		public DivideOperationUnit(IReadOnlyRegisterGroup registers) : base(registers) { }
+		public DivideOperationUnit(IRegisterGroup registers) : base(registers) { }
 
 		protected override void InternalExecute()
 		{
@@ -22,8 +22,8 @@ namespace AbaSim.Core.Virtualization.Abacus16.Operations
 			}
 			else
 			{
-				//CHECK: where is the overflow written to?
-				UpdateRegister(DestinationRegister, (Word)(Registers.Scalar[LeftRegister].SignedValue / Registers.Scalar[RightRegister].SignedValue));
+				Destination =  (Word)(Left.SignedValue / Right.SignedValue);
+				Overflow = (Word)(Left.SignedValue % Right.SignedValue);
 			}
 		}
 	}
