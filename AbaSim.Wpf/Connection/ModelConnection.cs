@@ -35,8 +35,7 @@ namespace AbaSim.Wpf.Connection
             }
             catch (Core.Compiler.CompilerException e)
             {
-                //ToDo MessageBox Berechnung beenden. Fenster Schließen
-                return;
+                Wpf.Exception.ExceptionHandling.catchException(e);
             }
         }
 
