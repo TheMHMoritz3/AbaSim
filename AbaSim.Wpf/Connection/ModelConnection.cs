@@ -2,10 +2,12 @@
 using AbaSim.Core.Virtualization.Abacus16;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace AbaSim.Wpf.Connection
 {
@@ -73,6 +75,22 @@ namespace AbaSim.Wpf.Connection
                     return VirtualSystem.ExecutedClockCycles;
                 return 0;
             }
+        }
+
+        public List<Command> UpdateProgrammcodeView()
+        {
+            string[] elements = ProgrammText.Split('\n');
+            int i = 0;
+            List<Command> commands= new List<Command>();
+            foreach (string element in elements)
+            {
+                Command com = new Command();
+                com.Line = ++i;
+                com.CommandString = element;
+                commands.Add(com);
+                System.Diagnostics.Trace.WriteLine(i);
+            }
+            return commands;
         }
 
         Host VirtualSystem = null;

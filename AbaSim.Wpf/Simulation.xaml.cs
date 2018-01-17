@@ -56,11 +56,13 @@ namespace AbaSim.Wpf
         {
             StepSlider.Maximum = Model.Steps;
 
-            if (Model.Steps>0)
+            if (Model.Steps > 0)
             {
                 StepSlider.IsEnabled = true;
                 AnalysisTabItem.IsEnabled = true;
                 StatisticsTabItem.IsEnabled = true;
+
+                CommandListView.setDataBinding(Model.UpdateProgrammcodeView());
             }
         }
 

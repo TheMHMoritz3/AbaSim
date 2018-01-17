@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("AbaSim.Wpf")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("MHMoritz3")]
 [assembly: AssemblyProduct("AbaSim.Wpf")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]

@@ -1,11 +1,12 @@
-﻿<Window x:Class="AbaSim.Wpf.Window1"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AbaSim.Wpf"
         xmlns:connection="clr-namespace:AbaSim.Wpf.Connection"
-        d:DataContext="{d:DesignInstance Type=connection:ModelConnection}"
+        xmlns:Widgets="clr-namespace:AbaSim.Wpf.Widgets" x:Class="AbaSim.Wpf.Window1"
+        d:DataContext="{d:DesignInstance Type={x:Type connection:ModelConnection}}"
         mc:Ignorable="d"
         Title="Window1" Height="454.912" Width="720.795">
     <Grid>
@@ -18,53 +19,19 @@
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="49*"/>
-                        <ColumnDefinition Width="103*"/>
-                        <ColumnDefinition Width="163*"/>
-                        <ColumnDefinition Width="54*"/>
-                        <ColumnDefinition Width="177*"/>
-                        <ColumnDefinition Width="161*"/>
+                        <ColumnDefinition Width="175*"/>
+                        <ColumnDefinition Width="167*"/>
+                        <ColumnDefinition Width="316*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="35*"/>
                         <RowDefinition Height="342*"/>
                     </Grid.RowDefinitions>
-                    <Slider x:Name="StepSlider" HorizontalAlignment="Left" Margin="36,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.485,-0.207" Width="612" Height="18" ValueChanged="onStepValueChenged" SmallChange="1" Maximum="{Binding Steps,Delay=100,FallbackValue=0}" Grid.ColumnSpan="5" IsEnabled="False" Grid.Column="1"/>
-                    <TextBlock x:Name="StepLabel" Text="{Binding Steps, StringFormat='Step: {0}', Delay=100, FallbackValue=0}" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="26" Width="46" Grid.ColumnSpan="2"/>
-                    <ListView HorizontalAlignment="Left" Height="342" VerticalAlignment="Top" Width="152" Grid.ColumnSpan="2" Margin="0,35,0,0" Grid.RowSpan="2">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <ListView Grid.Column="2" HorizontalAlignment="Left" Height="342" Grid.Row="1" VerticalAlignment="Top" Width="163">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <ListView Grid.Column="3" HorizontalAlignment="Left" Height="342" Grid.Row="1" VerticalAlignment="Top" Width="54">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <ListView Grid.Column="4" HorizontalAlignment="Left" Height="342" Grid.Row="1" VerticalAlignment="Top" Width="177">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <ListView Grid.Column="5" HorizontalAlignment="Left" Height="342" Grid.Row="1" VerticalAlignment="Top" Width="161">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+                    <Slider x:Name="StepSlider" HorizontalAlignment="Left" Margin="36,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.485,-0.207" Width="612" Height="18" ValueChanged="onStepValueChenged" SmallChange="1" Maximum="{Binding Steps, Delay=100, FallbackValue=0}" IsEnabled="False" Grid.Column="1" Grid.ColumnSpan="3"/>
+                    <TextBlock x:Name="StepLabel" Text="{Binding Steps, Delay=100, FallbackValue=0, StringFormat=Step: \{0\}}" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="26" Width="46" Grid.ColumnSpan="2"/>
+                    <TextBlock x:Name="Cache" Grid.Column="2" HorizontalAlignment="Left" Margin="4,3,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="160" Height="339"/>
+                    <TextBlock x:Name="MainMemory" Grid.Column="3" HorizontalAlignment="Left" Margin="0,3,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="316" Height="339"/>
+                    <Widgets:CommandView x:Name="CommandListView" HorizontalAlignment="Left" Height="339" Margin="0,3,0,0" Grid.Row="1" VerticalAlignment="Top" Width="223" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="AnalysisTabItem" Header="Analysis" IsEnabled="False">
