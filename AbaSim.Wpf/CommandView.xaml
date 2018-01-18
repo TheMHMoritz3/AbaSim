@@ -8,10 +8,11 @@
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignData Type=connection:Command}">
     <Grid>
-        <ListView x:Name="CommandViewList">
+        <ListView x:Name="CommandViewList" ItemsSource="{Binding}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Line" DisplayMemberBinding="{Binding Command.Line}"/>
+                    <GridViewColumn Header="Line" DisplayMemberBinding="{Binding Line}"/>
+                    <GridViewColumn Header="Command" DisplayMemberBinding="{Binding CommandString}" />
                 </GridView>
             </ListView.View>
         </ListView>
