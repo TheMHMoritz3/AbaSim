@@ -11,7 +11,7 @@ namespace AbaSim.Core.Virtualization
 		public LinearDirectMemoryCache(IMemoryProvider<Word> backingMemoryProvider, int cacheSize)
 			: base(backingMemoryProvider)
 		{
-			Cache = new CacheItem<Word>[cacheSize];
+			Cache = new CacheItem[cacheSize];
 		}
 
 		public override Word this[int index]
@@ -46,12 +46,12 @@ namespace AbaSim.Core.Virtualization
 					if (item.Valid)
 					{
 						BackingMemoryProvider[item.SourceAddress] = item.Value;
-						//CHECK: count this, even for invalid values?
-						NotifyCacheMiss();
+						NotifyWriteBack();
 					}
 					item.Value = value;
 					item.SourceAddress = index;
 					item.Valid = true;
+					NotifyCacheMiss();
 				}
 				Cache[index % Cache.Length] = item;
 			}
@@ -65,13 +65,29 @@ namespace AbaSim.Core.Virtualization
 			}
 		}
 
-		private CacheItem<Word>[] Cache;
+		private CacheItem[] Cache;
 
-		protected struct CacheItem<Word>
+		protected struct CacheItem
 		{
 			public bool Valid;
 			public Word Value;
 			public int SourceAddress;
+		}
+
+		public override IEnumerable<KeyValuePair<int, Word>> GetDebugDump()
+		{
+			return BackingMemoryProvider.GetDebugDump().Select(item =>
+			{
+				var citem = Cache.FirstOrDefault(i => i.SourceAddress == item.Key);
+				if (!citem.Valid)
+				{
+					return item;
+				}
+				else
+				{
+					return new KeyValuePair<int,Word>(citem.SourceAddress, citem.Value);
+				}
+			});
 		}
 	}
 }

@@ -18,6 +18,14 @@ namespace AbaSim.Core.Virtualization.Abacus16
 
 		public static readonly Word True = ~False;
 
+		public static readonly Word UnsignedMaxValue = new Word() { UnsignedValue = ushort.MaxValue };
+
+		public static readonly Word UnsignedMinValue = new Word() { UnsignedValue = ushort.MinValue };
+
+		public static readonly Word SignedMaxValue = new Word() { SignedValue = short.MaxValue };
+
+		public static readonly Word SignedMinValue = new Word() { SignedValue = short.MinValue };
+
 		[FieldOffset(0)]
 		public short SignedValue;
 
@@ -55,6 +63,21 @@ namespace AbaSim.Core.Virtualization.Abacus16
 		public override string ToString()
 		{
 			return Convert.ToString(UnsignedValue, 2).PadLeft(Size, '0');
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is Word)
+			{
+				Word typedObj = (Word)obj;
+				return typedObj.UnsignedValue == UnsignedValue;
+			}
+			return base.Equals(obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return UnsignedValue.GetHashCode();
 		}
 
 		public static Word operator &(Word a, Word b)
@@ -99,6 +122,16 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			return result;
 		}
 
+		public static bool operator ==(Word a, Word b)
+		{
+			return a.UnsignedValue == b.UnsignedValue;
+		}
+
+		public static bool operator !=(Word a, Word b)
+		{
+			return a.UnsignedValue != b.UnsignedValue;
+		}
+
 		public static explicit operator Word(int source)
 		{
 			var result = new Word();
@@ -106,7 +139,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			return result;
 		}
 
-		public static implicit operator int(Word source)
+		public static explicit operator int(Word source)
 		{
 			return source.SignedValue;
 		}
@@ -118,7 +151,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			return result;
 		}
 
-		public static implicit operator uint(Word source)
+		public static explicit operator uint(Word source)
 		{
 			return source.UnsignedValue;
 		}
@@ -130,7 +163,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			return result;
 		}
 
-		public static implicit operator ushort(Word source)
+		public static explicit operator ushort(Word source)
 		{
 			return source.UnsignedValue;
 		}
@@ -142,7 +175,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			return result;
 		}
 
-		public static implicit operator short(Word source)
+		public static explicit operator short(Word source)
 		{
 			return source.SignedValue;
 		}

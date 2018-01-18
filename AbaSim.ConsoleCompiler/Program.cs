@@ -27,29 +27,66 @@ namespace AbaSim.ConsoleCompiler
 				sourceCode = System.IO.File.ReadAllText(sourceFile);
 			}
 
-			Core.Compiler.AssemblerCompiler compiler = new Core.Compiler.AssemblerCompiler();
+
+			Core.Compiler.AssemblerCompiler compiler = new Core.Compiler.AssemblerCompiler()
+			{
+				Dialect = Core.Compiler.Parsing.Dialects.ChDFT
+			};
 			compiler.LoadMappings();
-			byte[] binary;
-			try
+			var pipeline = Core.Compiler.CompilePipeline
+				.Start(new Core.Compiler.Lexing.AssemblerLexer())
+				.Continue(new Core.Compiler.PseudoInstructionSubstitutor())
+				.Inspect((instructions, log) =>
+				{
+					int i = 0;
+					Console.WriteLine("Code after substitution:");
+					foreach (var instruction in instructions)
+					{
+						Console.WriteLine("{0,4}|{2,4}| {1}", i, instruction, instruction.SourceLine);
+						i++;
+					}
+				})
+				.Continue(compiler)
+				.Complete();
+
+			var result = pipeline.Compile(sourceCode);
+
+			if (result.Log.ErrorOccured)
 			{
-				binary = compiler.Compile(sourceCode);
+				Console.WriteLine("Compilation failed.");
 			}
-			catch (Core.Compiler.CompilerException e)
+			else
 			{
-				Console.WriteLine("Compiling failed: {0}", e.GetType());
-				Console.WriteLine(e.Message);
+				Console.WriteLine("Compilation succeeded.");
+			}
+
+			//only print the log if the output is not printed
+			if (destinationFile != null)
+			{
+				foreach (var item in result.Log.OrderByDescending(i => i.Severity))
+				{
+					Console.WriteLine("{0} | {1}: {2}", item.Severity, item.Location, item.Message);
+					if (!string.IsNullOrEmpty(item.Description))
+					{
+						Console.WriteLine(item.Description);
+					}
+				}
+			}
+
+			if (result.Log.ErrorOccured)
+			{
 				Environment.ExitCode = 2;
 				return;
 			}
 
 			if (destinationFile != null)
 			{
-				System.IO.File.WriteAllBytes(destinationFile, binary);
+				System.IO.File.WriteAllBytes(destinationFile, result.Output);
 				Console.WriteLine("Done.");
 			}
 			else
 			{
-				Console.OpenStandardOutput().Write(binary, 0, binary.Length);
+				Console.OpenStandardOutput().Write(result.Output, 0, result.Output.Length);
 			}
 		}
 	}

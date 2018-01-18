@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace AbaSim.Core.Compiler.Parsing
 {
-	public enum ConstantValueRestriction
+	public static class Dialects
 	{
-		Signed = 0,
-		Unsigned,
-		Fixed
+		public const string Default = null;
+
+		public const string ChDFT = "chdft";
 	}
 }

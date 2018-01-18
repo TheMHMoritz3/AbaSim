@@ -8,7 +8,7 @@ using AbaSim.Core.Virtualization.Abacus16;
 
 namespace AbaSim.Core.Compiler
 {
-	public class AssemblerCompiler
+	public class AssemblerCompiler : ICompileStep<IEnumerable<Lexing.Instruction>, byte[]>
 	{
 		public AssemblerCompiler() { }
 
@@ -16,31 +16,29 @@ namespace AbaSim.Core.Compiler
 
 		public string Dialect { get; set; }
 
-		protected Dictionary<string, int> Labels = new Dictionary<string, int>();
+		//protected Dictionary<string, int> Labels = new Dictionary<string, int>();
 
 		protected Dictionary<string, InstructionMapping> Mappings;
 
+		[Obsolete("use Lexing.AssemblerLexer.Lex(string) instead; consider piping the output using a CompilerPipeline", true)]
 		public byte[] Compile(string sourceCode)
 		{
-			Lexing.AssemblerLexer lexer = new Lexing.AssemblerLexer();
-
-			return Compile(lexer.Lex(sourceCode));
+			throw new NotImplementedException();
 		}
 
-		public byte[] Compile(IEnumerable<Lexing.Instruction> instructions)
+		public byte[] Compile(IEnumerable<Lexing.Instruction> instructions, CompileLog log)
 		{
 			List<Lexing.Instruction> instructionsList = instructions.ToList();
 
 			List<Word> nativeInstructions = new List<Word>();
 
-			IndexInstructions(instructionsList);
+			var labels = IndexInstructions(instructionsList, log);
 
 			int instructionCounter = 0;
 			foreach (var instruction in instructionsList)
 			{
 				if (!string.IsNullOrWhiteSpace(instruction.Operation))
 				{
-					//TODO: handle pseudo instructions
 					InstructionMapping mapping;
 
 					if (Mappings.TryGetValue(instruction.Operation.Trim(), out mapping))
@@ -57,15 +55,15 @@ namespace AbaSim.Core.Compiler
 								{
 									//rd
 									int rd = ParseRawRegister(instruction.Arguments[0]);
-									nativeInstruction |= ((((Word)rd) & ((Word)(Bit.S7 + Bit.S8 + Bit.S9))) << 7);
+									nativeInstruction |= ((((Word)rd) & ((Word)Bit.MaskFirstS(3))) << 7);
 
 									//rl
 									int rl = ParseRawRegister(instruction.Arguments[1]);
-									nativeInstruction |= ((((Word)rl) & ((Word)(Bit.S4 + Bit.S5 + Bit.S6))) << 4);
+									nativeInstruction |= ((((Word)rl) & ((Word)Bit.MaskFirstS(3))) << 4);
 
 									//rr
 									int rr = ParseRawRegister(instruction.Arguments[1]);
-									nativeInstruction |= (((Word)rr) & ((Word)(Bit.S1 + Bit.S2 + Bit.S3)));
+									nativeInstruction |= ((((Word)rr) & ((Word)Bit.MaskFirstS(3))) << 1);
 
 									if (mapping.Type == Parsing.InstructionType.VRegister)
 									{
@@ -74,82 +72,205 @@ namespace AbaSim.Core.Compiler
 								}
 								else
 								{
-									throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
+									log.Error(instruction.SourceLine.ToString(),
+										"Illegal parameter list (wrong parameter count).",
+										string.Format("Register instructions without fixed parameters expect exactly 3 parameters (register rd, register rl, register rr), however {0} were provided ({2}).", instruction.Arguments.Count, string.Join(",", instruction.Arguments)));
+
+									//throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
 								}
 								break;
 							case AbaSim.Core.Compiler.Parsing.InstructionType.Store:
 								{
-									int constant;
-									int rd;
-									if (mapping.ConstantRestriction == Parsing.ValueRestriction.Fixed)
+									byte constantSize = 7;
+									int constant = 0;
+									int rd = 0;
+									if (mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Fixed && mapping.DestinationRestriction == Parsing.RegisterReferenceRestriction.Fixed)
 									{
 										constant = mapping.FixedConstantValue;
-										rd = 0;
+										rd = mapping.FixedDestinationValue;
+										if (instruction.Arguments.Count != 0)
+										{
+											log.Warning(instruction.SourceLine.ToString(),
+												"Ignoring parameters on fixed store instruction.",
+												"Fixed store instructions use the constant part of the binary instruction to multiplex between multiple logical instructions. They do not accept any parameters.");
+										}
+									}
+									else if (mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Fixed && mapping.DestinationRestriction != Parsing.RegisterReferenceRestriction.Fixed)
+									{
+										constant = mapping.FixedConstantValue;
+										rd = ParseRawRegister(instruction.Arguments[0]);
+										if (instruction.Arguments.Count != 1)
+										{
+											log.Warning(instruction.SourceLine.ToString(),
+												"Ignoring parameters on constant-fixed store instruction.",
+												"Constant-fixed store instructions use the constant part of the binary instruction to multiplex between multiple logical instructions. They accept exactly 1 parameter (rd).");
+										}
+									}
+									else if (mapping.ConstantRestriction != Parsing.ConstantValueRestriction.Fixed && mapping.DestinationRestriction == Parsing.RegisterReferenceRestriction.Fixed)
+									{
+										constant = ParseRawConstant(instruction.Arguments[1], instructionCounter, labels);
+										rd = mapping.FixedDestinationValue;
+										if (instruction.Arguments.Count != 1)
+										{
+											log.Warning(instruction.SourceLine.ToString(),
+												"Ignoring parameters on destination-fixed store instruction.",
+												"Destination-fixed store instructions use the rd (destination register) part of the binary instruction to multiplex between multiple logical instructions. They accept exactly 1 parameter (c).");
+										}
 									}
 									else if (instruction.Arguments.Count == 2)
 									{
-										constant = ParseRawConstant(instruction.Arguments[1], instructionCounter);
+										constant = ParseRawConstant(instruction.Arguments[1], instructionCounter, labels);
 										rd = ParseRawRegister(instruction.Arguments[0]);
 									}
 									else
 									{
-										throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
+										log.Error(instruction.SourceLine.ToString(),
+											"Illegal parameter list (wrong parameter count).",
+											string.Format("Store instructions without fixed parameters expect exactly 2 parameters (register rd, constant c), however {0} were provided ({2}).", instruction.Arguments.Count, string.Join(",", instruction.Arguments)));
+										//throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
 									}
 
-									//TODO: bound validation on constant
+									int constantMin = Bit.LowerBound(constantSize, mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned);
+									int constantMax = Bit.UpperBound(constantSize, mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned);
+									if (constant < constantMin || constant > constantMax)
+									{
+										log.Error(instruction.SourceLine.ToString(),
+											string.Format("Constant/Label (c={0}) is out of bounds ([{1};{2}]).", constant, constantMin, constantMax),
+											"Consider using a mov statement and adding the remainder in a register using addi/addiu.");
+									}
 
-									nativeInstruction |= (((Word)constant) & ((Word)(Bit.S0 + Bit.S1 + Bit.S2 + Bit.S3 + Bit.S4 + Bit.S5 + Bit.S6)));
-									nativeInstruction |= ((((Word)rd) & ((Word)(Bit.S7 + Bit.S8 + Bit.S9))) << 7);
+									nativeInstruction |= (((Word)constant) & ((Word)Bit.MaskFirstS(7)));
+									nativeInstruction |= ((((Word)rd) & ((Word)Bit.MaskFirstS(3))) << 7);
 
 								}
 								break;
 							case AbaSim.Core.Compiler.Parsing.InstructionType.Immediate:
 								{
-									int constant;
-									int rd;
-									int rl;
-									if (mapping.ConstantRestriction == Parsing.ValueRestriction.Fixed)
+									byte constantSize = 4;
+									int constant = 0;
+									int rd = 0;
+									int rl = 0;
+									if (mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Fixed && mapping.DestinationRestriction == Parsing.RegisterReferenceRestriction.Fixed)
 									{
 										constant = mapping.FixedConstantValue;
-										rd = 0;
+										rd = mapping.FixedDestinationValue;
 										rl = 0;
+										if (instruction.Arguments.Count != 0)
+										{
+											log.Warning(instruction.SourceLine.ToString(),
+												"Illegal parameter list (wrong parameter count).",
+												"Fixed immediate instructions use the constant part of the binary instruction to multiplex between multiple logical instructions. They do not accept any parameters.");
+										}
 									}
-									else if (instruction.Arguments.Count == 3)
+									else if (mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Fixed && mapping.DestinationRestriction != Parsing.RegisterReferenceRestriction.Fixed)
 									{
-										constant = ParseRawConstant(instruction.Arguments[2], instructionCounter);
-										rd = ParseRawRegister(instruction.Arguments[0]);
-										rl = ParseRawRegister(instruction.Arguments[1]);
+										if (instruction.Arguments.Count == 1)
+										{
+											constant = mapping.FixedConstantValue;
+											rd = ParseRawRegister(instruction.Arguments[0]);
+											rl = 0;
+										}
+										else
+										{
+											log.Warning(instruction.SourceLine.ToString(),
+												"Illegal parameter list (wrong parameter count).",
+												"Constant-fixed immediate instructions use the constant part of the binary instruction to multiplex between multiple logical instructions. They accept exactly 1 parameter (rd).");
+										}
+									}
+									else if (mapping.ConstantRestriction != Parsing.ConstantValueRestriction.Fixed && mapping.DestinationRestriction == Parsing.RegisterReferenceRestriction.Fixed)
+									{
+										if (instruction.Arguments.Count == 1)
+										{
+											constant = ParseRawConstant(instruction.Arguments[0], instructionCounter, labels);
+											rd = mapping.FixedDestinationValue;
+											rl = 0;
+										}
+										else
+										{
+											log.Error(instruction.SourceLine.ToString(),
+												"Ignoring parameters on destination-fixed immediate instruction.",
+												"Destination-fixed immediate instructions use the rd (destination register) part of the binary instruction to multiplex between multiple logical instructions. They accept exactly 1 parameter (c).");
+
+										}
 									}
 									else
 									{
-										throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
-									}
+										if (instruction.Arguments.Count == 3)
+										{
+											constant = ParseRawConstant(instruction.Arguments[2], instructionCounter, labels);
+											rd = ParseRawRegister(instruction.Arguments[0]);
+											rl = ParseRawRegister(instruction.Arguments[1]);
+										}
+										else
+										{
+											log.Error(instruction.SourceLine.ToString(),
+												"Illegal parameter list (wrong parameter count).",
+												string.Format("Immediate instructions without fixed parameters expect exactly 3 parameters (register rd, register rl, constant c), however {0} were provided ({2}).", instruction.Arguments.Count, string.Join(",", instruction.Arguments)));
 
-									Word constantMask = ((Word)(Bit.S0 + Bit.S1 + Bit.S2 + Bit.S3));
+											//throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
+										}
+									}
 
 									//bounds validation
-									int constantMin = (mapping.ConstantRestriction == Parsing.ValueRestriction.Unsigned ? 0 : -1 * constantMask / 2);
-									int constantMax = (mapping.ConstantRestriction == Parsing.ValueRestriction.Unsigned ? constantMask : constantMask / 2);
+									//int constantMin = (mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned ? 0 : -1 * (int)constantMask / 2);
+									//int constantMax = (mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned ? (int)constantMask : (int)constantMask / 2);
+									int constantMin = Bit.LowerBound(constantSize, mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned);
+									int constantMax = Bit.UpperBound(constantSize, mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned);
 									if (constant < constantMin || constant > constantMax)
 									{
-										throw new ValueOutOfBoundsException(constant, constantMin, constantMax);
+										log.Error(instruction.SourceLine.ToString(),
+											string.Format("Constant/Label (c={0}) is out of bounds ([{1};{2}]).", constant, constantMin, constantMax),
+											"Consider using a mov statement and adding the remainder in a register using addi/addiu.");
 									}
 
-									nativeInstruction |= (((Word)constant) & constantMask);
-									nativeInstruction |= ((((Word)rd) & ((Word)(Bit.S7 + Bit.S8 + Bit.S9))) << 7);
-									nativeInstruction |= ((((Word)rl) & ((Word)(Bit.S4 + Bit.S5 + Bit.S6))) << 4);
+									nativeInstruction |= (((Word)constant) & Bit.MaskFirstS(constantSize));
+									nativeInstruction |= ((((Word)rd) & ((Word)Bit.MaskFirstS(3))) << 7);
+									nativeInstruction |= ((((Word)rl) & ((Word)Bit.MaskFirstS(3))) << 4);
 								}
 								break;
 							case AbaSim.Core.Compiler.Parsing.InstructionType.Jump:
-								if (instruction.Arguments.Count == 1)
 								{
-									int constant = ParseRawConstant(instruction.Arguments[0], instructionCounter);
-									nativeInstruction |= (((Word)constant) & ((Word)(Bit.S0 + Bit.S1 + Bit.S2 + Bit.S3 + Bit.S4 + Bit.S5 + Bit.S6 + Bit.S7 + Bit.S8 + Bit.S9)));
-									//TODO: bound validation on constant
-								}
-								else
-								{
-									throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
+									byte constantSize = 10;
+									int constant = 0;
+									if (mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Fixed)
+									{
+										if (instruction.Arguments.Count == 0)
+										{
+											constant = mapping.FixedConstantValue;
+										}
+										else
+										{
+											log.Warning(instruction.SourceLine.ToString(),
+												"Ignoring parameters on constant-fixed jump instruction.",
+												"Constant-fixed jump instructions use the constant part of the binary instruction to multiplex between multiple logical instructions. They accept exactly 1 parameter (c).");
+										}
+									}
+									else
+									{
+										if (instruction.Arguments.Count == 1)
+										{
+											constant = ParseRawConstant(instruction.Arguments[0], instructionCounter, labels);
+										}
+										else
+										{
+											log.Error(instruction.SourceLine.ToString(),
+												"Illegal parameter list (wrong parameter count).",
+												string.Format("Jump instructions without fixed parameters expect exactly 1 parameter (constant c), however {0} were provided ({2}).", instruction.Arguments.Count, string.Join(",", instruction.Arguments)));
+
+
+											//throw new IllegalArgumentListException(instruction.Operation, instruction.Arguments, mapping.Type);
+										}
+									}
+
+									nativeInstruction |= (((Word)constant) & Bit.MaskFirstS(constantSize));
+									int constantMin = Bit.LowerBound(constantSize, mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned);
+									int constantMax = Bit.UpperBound(constantSize, mapping.ConstantRestriction == Parsing.ConstantValueRestriction.Unsigned);
+									if (constant < constantMin || constant > constantMax)
+									{
+										log.Error(instruction.SourceLine.ToString(),
+											string.Format("Constant/Label (c={0}) is out of bounds ([{1};{2}]).", constant, constantMin, constantMax),
+											"Consider using jmp with a pre-calculated (i.e. using mov and add) target instead of a constant jump (j) for long jumps.");
+									}
 								}
 								break;
 							default:
@@ -180,7 +301,7 @@ namespace AbaSim.Core.Compiler
 		public virtual void LoadMappings()
 		{
 			Mappings = new Dictionary<string, InstructionMapping>();
-			foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+			foreach (var type in typeof(AssemblerCompiler).Assembly.GetTypes())
 			{
 				foreach (var mappingAttribute in type.GetCustomAttributes<Parsing.AssemblyCodeAttribute>())
 				{
@@ -192,7 +313,9 @@ namespace AbaSim.Core.Compiler
 							OpCode = mappingAttribute.OpCode,
 							Dialect = mappingAttribute.Dialect,
 							ConstantRestriction = mappingAttribute.ConstantRestriction,
-							FixedConstantValue = mappingAttribute.FixedConstantValue
+							FixedConstantValue = mappingAttribute.FixedConstantValue,
+							DestinationRestriction = mappingAttribute.DestinationRestriction,
+							FixedDestinationValue = mappingAttribute.FixedDestinationValue
 						});
 					}
 				}
@@ -210,6 +333,7 @@ namespace AbaSim.Core.Compiler
 			{
 				rawRegister = rawRegister.Substring(1);
 			}
+
 			int registerIndex;
 			if (int.TryParse(rawRegister, out registerIndex))
 			{
@@ -225,14 +349,14 @@ namespace AbaSim.Core.Compiler
 			}
 		}
 
-		protected virtual int ParseRawConstant(string rawConstant, int instructionCounter)
+		protected virtual int ParseRawConstant(string rawConstant, int instructionCounter, Dictionary<string, int> labels)
 		{
 			rawConstant = rawConstant.Trim();
 			int constant;
 			if (!int.TryParse(rawConstant, out constant))
 			{
 				int targetInstruction;
-				if (Labels.TryGetValue(rawConstant, out targetInstruction))
+				if (labels.TryGetValue(rawConstant, out targetInstruction))
 				{
 					constant = targetInstruction - instructionCounter;
 				}
@@ -244,22 +368,41 @@ namespace AbaSim.Core.Compiler
 			return constant;
 		}
 
-		private void IndexInstructions(List<Lexing.Instruction> instructions)
+		private Dictionary<string, int> IndexInstructions(List<Lexing.Instruction> instructions, CompileLog log)
 		{
-			int instructionCounter = 0;
-			Labels.Clear();
+			int instructionCounter = -1;
+			var labels = new Dictionary<string, int>();
 
 			foreach (var instruction in instructions)
 			{
 				if (!string.IsNullOrWhiteSpace(instruction.Label))
 				{
-					Labels.Add(instruction.Label.Trim(), instructionCounter);
+					if (labels.ContainsKey(instruction.Label))
+					{
+						log.Error(instruction.SourceLine.ToString(), 
+							"Ambiguous Label", 
+							string.Format("Labels must be unique, however the label {0} was declared in line {1} and {2}.", instruction.Label, instruction.SourceLine, labels[instruction.Label]));
+					}
+					labels.Add(instruction.Label.Trim(), instructionCounter + 1);
+					if (string.IsNullOrWhiteSpace(instruction.Operation) && Dialect != Parsing.Dialects.ChDFT)
+					{
+						log.Error(instruction.SourceLine.ToString(), 
+							"Labels may only decorate Operations", 
+							"Labels may only be used on lines where an operation is declared. Consider using j 1 or nop if you need to declare a label separately.");
+					}
+					else
+					{
+						log.Information(instruction.SourceLine.ToString(), 
+							"Label without Operation", 
+							"A label was declared on a line without an operation.");
+					}
 				}
 				if (!string.IsNullOrWhiteSpace(instruction.Operation))
 				{
 					instructionCounter++;
 				}
 			}
+			return labels;
 		}
 
 		protected struct InstructionMapping
@@ -270,9 +413,13 @@ namespace AbaSim.Core.Compiler
 
 			public string Dialect { get; set; }
 
-			public Parsing.ValueRestriction ConstantRestriction { get; set; }
+			public Parsing.ConstantValueRestriction ConstantRestriction { get; set; }
 
 			public byte FixedConstantValue { get; set; }
+
+			public Parsing.RegisterReferenceRestriction DestinationRestriction { get; set; }
+
+			public byte FixedDestinationValue { get; set; }
 		}
 	}
 }

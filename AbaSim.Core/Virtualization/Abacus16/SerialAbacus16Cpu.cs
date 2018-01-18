@@ -8,6 +8,8 @@ namespace AbaSim.Core.Virtualization.Abacus16
 {
 	public class SerialAbacus16Cpu : ICpu
 	{
+		public static readonly int MaximumAddressableMemory = Word.UnsignedMaxValue.UnsignedValue;
+
 		private const int InstructionLength = 6;
 
 		public SerialAbacus16Cpu(IMemoryProvider<Word> programMemory, IMemoryProvider<Word> dataMemory)
@@ -20,8 +22,8 @@ namespace AbaSim.Core.Virtualization.Abacus16
 			//memory access
 			OperationRegistry.Add(Operations.LoadOperationUnit.OpCode, new Operations.LoadOperationUnit(DataMemory, _Register));
 			OperationRegistry.Add(Operations.LoadIOperationUnit.OpCode, new Operations.LoadIOperationUnit(DataMemory, _Register));
-			OperationRegistry.Add(Operations.StoreValueOperationUnit.OpCode, new Operations.StoreValueOperationUnit(DataMemory, _Register));
-			OperationRegistry.Add(Operations.StoreValueIOperationUnit.OpCode, new Operations.StoreValueIOperationUnit(DataMemory, _Register));
+			OperationRegistry.Add(Operations.StoreValueOperationUnit.OpCode, new Operations.StoreValueOperationUnit(_Register));
+			OperationRegistry.Add(Operations.StoreValueIOperationUnit.OpCode, new Operations.StoreValueIOperationUnit(_Register));
 			//register move
 			OperationRegistry.Add(Operations.MoveOperationUnit.OpCode, new Operations.MoveOperationUnit(_Register));
 			//synchronization
@@ -177,6 +179,7 @@ namespace AbaSim.Core.Virtualization.Abacus16
 		/// </summary>
 		protected virtual void MemoryAccess()
 		{
+			//CHECK: accessing the memory to check if a write is needed may cause caches to misbehave (i.e. cause uneeded misses, since we are just writing and not interested in the old value)
 			if (OperationUnit.UpdateMemoryAddress != null && DataMemory[OperationUnit.UpdateMemoryAddress.Value] != OperationUnit.UpdateMemoryValue)
 			{
 				DataMemory[OperationUnit.UpdateMemoryAddress.Value] = OperationUnit.UpdateMemoryValue;
@@ -190,7 +193,11 @@ namespace AbaSim.Core.Virtualization.Abacus16
 		protected virtual void WriteBack()
 		{
 			OperationUnit.WriteRegisterChanges();
-			StateChanged = StateChanged || LastRegisterStateGeneration != Register.StateGeneration;
+			if (!StateChanged)
+			{
+				StateChanged = LastRegisterStateGeneration != Register.StateGeneration;
+			}
+			LastRegisterStateGeneration = Register.StateGeneration;
 			ProgramCounter += OperationUnit.ProgramCounterChange;
 		}
 

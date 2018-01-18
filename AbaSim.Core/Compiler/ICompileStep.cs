@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbaSim.Core.Compiler.Parsing
+namespace AbaSim.Core.Compiler
 {
-	public enum ConstantValueRestriction
+	public interface ICompileStep<TInput, TOutput>
 	{
-		Signed = 0,
-		Unsigned,
-		Fixed
+		TOutput Compile(TInput input, CompileLog log);
 	}
 }

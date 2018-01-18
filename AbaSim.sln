@@ -16,6 +16,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbaSim.ConsoleCompiler", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbaSim.Wpf", "AbaSim.Wpf\AbaSim.Wpf.csproj", "{F72A1A9D-E9D7-4C24-B671-09E73495DD1D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example Applications", "Example Applications", "{95F60792-92BF-4615-AFC8-4182338E13DD}"
+	ProjectSection(SolutionItems) = preProject
+		Example Programs\JumpOut.assembly = Example Programs\JumpOut.assembly
+		Example Programs\Stack.assembly = Example Programs\Stack.assembly
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AbaSim.Core.Virtualization.Abacus16.Operations
 {
-	[AbaSim.Core.Compiler.Parsing.AssemblyCode("addiu", OpCode, Compiler.Parsing.InstructionType.Immediate, ConstantRestriction = AbaSim.Core.Compiler.Parsing.ValueRestriction.Unsigned)]
+	[AbaSim.Core.Compiler.Parsing.AssemblyCode("addiu", OpCode, Compiler.Parsing.InstructionType.Immediate, ConstantRestriction = AbaSim.Core.Compiler.Parsing.ConstantValueRestriction.Unsigned)]
 	class AddIUOperationUnit : ImmediateOperationUnit
 	{
 		public const byte OpCode = Bit.B1 + Bit.B0;
@@ -16,7 +16,7 @@ namespace AbaSim.Core.Virtualization.Abacus16.Operations
 		protected override void InternalExecute()
 		{
 			//CHECK: where is the overflow written to?
-			Destination =  (Word)(Left.SignedValue + UnsignedConstant);
+			Destination =  (Word)(Left.UnsignedValue + UnsignedConstant);
 		}
 	}
 }
