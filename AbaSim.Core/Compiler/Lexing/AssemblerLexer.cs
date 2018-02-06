@@ -36,21 +36,26 @@ namespace AbaSim.Core.Compiler.Lexing
 			int lineCounter = 0;
 			foreach (var line in lines)
 			{
-
-				//var match = InstructionExpression.Match(line);
-				//match.Captures[0]
-
 				var codeLine = line.TrimStart(WhiteSpace);
-				if (codeLine.StartsWith("//") || codeLine.StartsWith("#"))
+				if (codeLine.StartsWith("#"))
 				{
+					log.Warning(lineCounter.ToString(),
+						"Ignoring Compiler Directive",
+						"AbaSim.Compiler does not support compiler directives. You have to configure the runtime separately to change runtime settings.");
+					continue;
+				}
+				Instruction i = new Instruction();
+				List<string> args = new List<string>();
+				i.Arguments = args;
+				if (codeLine.StartsWith(CommentSeparator.ToString() + CommentSeparator.ToString()))
+				{
+					i.Comment = codeLine.Substring(2);
+					yield return i;
 					continue;
 				}
 				int offset = 0;
 				int boffset = 0;
 				Stage stage = Stage.LabelRunning;
-				Instruction i = new Instruction();
-				List<string> args = new List<string>();
-				i.Arguments = args;
 				int commentFirstSymbolSeenOffset = -2;
 				bool seenArgumentSeparatorSymbol = true; //set initially to true, as first argument does not need to be comma separated
 
@@ -107,10 +112,11 @@ namespace AbaSim.Core.Compiler.Lexing
 									else if (commentFirstSymbolSeenOffset == offset - 1)
 									{
 										stage = Stage.CommentRunning;
+										boffset = offset+1;
 									}
 									else
 									{
-										log.Error(location, "Unexpected comment separator.", "Comments must be started by 2 comment separator characters (\"" + CommentSeparator.ToString() +"\").");
+										log.Error(location, "Unexpected comment separator.", "Comments must be started by 2 comment separator characters (\"" + CommentSeparator.ToString() + "\").");
 									}
 								}
 								else
@@ -134,7 +140,7 @@ namespace AbaSim.Core.Compiler.Lexing
 					}
 					offset++;
 				}
-				if (stage == Stage.OperationRunning || stage==Stage.LabelRunning)
+				if (stage == Stage.OperationRunning || stage == Stage.LabelRunning)
 				{
 					i.Operation = codeLine.Substring(boffset);
 				}
