@@ -33,7 +33,29 @@ namespace AbaSim.Wpf.Connection
 
             try
             {
-                BinaryCode = Compiler.Compile(ProgrammText);
+                Core.Compiler.AssemblerCompiler compiler = new Core.Compiler.AssemblerCompiler()
+                {
+                    Dialect = Core.Compiler.Parsing.Dialects.ChDFT
+                };
+                compiler.LoadMappings();
+                var pipeline = Core.Compiler.CompilePipeline
+                    .Start(new Core.Compiler.Lexing.AssemblerLexer())
+                    .Continue(new Core.Compiler.PseudoInstructionSubstitutor())
+                    .Inspect((instructions, log) =>
+                    {
+                        int i = 0;
+                        //Console.WriteLine("Code after substitution:");
+                        foreach (var instruction in instructions)
+                        {
+                            //Console.WriteLine("{0,4}|{2,4}| {1}", i, instruction, instruction.SourceLine);
+                            i++;
+                        }
+                    })
+                    .Continue(compiler)
+                    .Complete();
+
+                //var result = pipeline.Compile(sourceCode);
+                BinaryCode = pipeline.Compile(ProgrammText);
             }
             catch (Core.Compiler.CompilerException e)
             {
@@ -43,7 +65,7 @@ namespace AbaSim.Wpf.Connection
 
         public Task startComputation()
         {
-            ProgramMemory = new BufferMemory16(BinaryCode);
+            ProgramMemory = new BufferMemory16(BinaryCode.Output);
             DataMemory = new BufferMemory16(65536);
 
             CPU = new SerialAbacus16Cpu(ProgramMemory,DataMemory);
@@ -87,6 +109,7 @@ namespace AbaSim.Wpf.Connection
                 Command com = new Command();
                 com.Line = ++i;
                 com.CommandString = element;
+                com.ProgrammCounter = 0;
                 commands.Add(com);
                 System.Diagnostics.Trace.WriteLine(i);
             }
@@ -99,7 +122,7 @@ namespace AbaSim.Wpf.Connection
         BufferMemory16 DataMemory = null;
         Core.Compiler.AssemblerCompiler Compiler;
         private string ProgrammText;
-        byte[] BinaryCode;
+        Core.Compiler.CompileResult<byte[]> BinaryCode;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

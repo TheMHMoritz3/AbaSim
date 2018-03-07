@@ -15,6 +15,9 @@
             <RowDefinition Height="19*"/>
         </Grid.RowDefinitions>
         <TabControl>
+            <TabItem Header="Overview">
+                
+            </TabItem>
             <TabItem Header="Steps">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>

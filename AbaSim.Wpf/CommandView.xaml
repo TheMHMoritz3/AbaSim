@@ -13,6 +13,7 @@
                 <GridView>
                     <GridViewColumn Header="Line" DisplayMemberBinding="{Binding Line}"/>
                     <GridViewColumn Header="Command" DisplayMemberBinding="{Binding CommandString}" />
+                    <GridViewColumn Header="First Occurance" DisplayMemberBinding="{Binding ProgramCounter}" />
                 </GridView>
             </ListView.View>
         </ListView>

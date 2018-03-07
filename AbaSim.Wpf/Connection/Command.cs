@@ -20,11 +20,11 @@ namespace AbaSim.Wpf.Connection
             internal set;
         }
 
-        //public int ProgrammCounter
-        //{
-        //    get;
-        //    internal set;
-        //}
+        public int ProgrammCounter
+        {
+            get;
+            internal set;
+        }
 
         //public byte[] CommandCache
         //{
