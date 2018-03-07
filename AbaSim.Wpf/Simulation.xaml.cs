@@ -63,6 +63,8 @@ namespace AbaSim.Wpf
                 StatisticsTabItem.IsEnabled = true;
 
                 CommandListView.setDataBinding(Model.UpdateProgrammcodeView());
+                CommandList.setDataBinding(Model.UpdateProgrammcodeView());
+                CommandList.toggleColums(Widgets.CommandView.Coulumns.FirstOccurence, false);
             }
         }
 

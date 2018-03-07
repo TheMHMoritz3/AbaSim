@@ -48,6 +48,7 @@ namespace AbaSim.Wpf.Connection
                         foreach (var instruction in instructions)
                         {
                             //Console.WriteLine("{0,4}|{2,4}| {1}", i, instruction, instruction.SourceLine);
+
                             i++;
                         }
                     })

@@ -21,6 +21,12 @@ namespace AbaSim.Wpf.Widgets
     /// </summary>
     public partial class CommandView : UserControl
     {
+        public enum Coulumns
+        {
+            Line,
+            Command,
+            FirstOccurence
+        }
         public CommandView()
         {
             InitializeComponent();
@@ -30,6 +36,45 @@ namespace AbaSim.Wpf.Widgets
         {
             System.Diagnostics.Trace.WriteLine(data.Count);
             CommandViewList.DataContext = data;
+        }
+
+        public void toggleColums(Coulumns coulumns, bool isActive)
+        {
+            switch (coulumns)
+            {
+                case Coulumns.Line:
+                    if (!isActive)
+                    {
+                        LineColumn.Width = 0;
+                    }
+                    else
+                    {
+                        LineColumn.Width = 30;
+                    }
+                    break;
+                case Coulumns.Command:
+                    if (!isActive)
+                    {
+                        CommandColumn.Width = 0;
+                    }
+                    else
+                    {
+                        CommandColumn.Width = 30;
+                    }
+                    break;
+                case Coulumns.FirstOccurence:
+                    if(!isActive)
+                    {
+                        FistOCoullumn.Width = 0;
+                    }
+                    else
+                    {
+                        FistOCoullumn.Width = 30;
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

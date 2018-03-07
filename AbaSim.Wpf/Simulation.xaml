@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
         <TabControl>
             <TabItem Header="Overview">
-                
+                <Widgets:CommandView x:Name="CommandList" Margin="0,-1,1,4" Grid.Row="1" Grid.ColumnSpan="2"/>
             </TabItem>
             <TabItem Header="Steps">
                 <Grid Background="#FFE5E5E5">

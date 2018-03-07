@@ -8,12 +8,12 @@
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignData Type=connection:Command}">
     <Grid>
-        <ListView x:Name="CommandViewList" ItemsSource="{Binding}">
+        <ListView x:Name="CommandViewList" ItemsSource="{Binding}" Margin="-10,0,10,0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Line" DisplayMemberBinding="{Binding Line}"/>
-                    <GridViewColumn Header="Command" DisplayMemberBinding="{Binding CommandString}" />
-                    <GridViewColumn Header="First Occurance" DisplayMemberBinding="{Binding ProgramCounter}" />
+                    <GridViewColumn x:Name="LineColumn" Header="Line" DisplayMemberBinding="{Binding Line}"/>
+                    <GridViewColumn x:Name="CommandColumn"  Header="Command" DisplayMemberBinding="{Binding CommandString}" />
+                    <GridViewColumn x:Name="FistOCoullumn" Header="First Occurance" DisplayMemberBinding="{Binding ProgramCounter}" />
                 </GridView>
             </ListView.View>
         </ListView>
